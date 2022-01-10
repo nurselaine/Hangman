@@ -2,9 +2,20 @@ import java.util.Scanner;
 import java.util.Random;
 
 public class Hangman {
-    public static void main(String[] args) {
-        // create a word bank
-        String [] wordBankArray = {"asteroid", "astronaut", "astronomer", "astronomical", "astronomy", "binary star", "black body", "black hole",
+    public static void main(String args[]){}
+
+    private String userGuessString;
+    private String generateSpaces;
+    private int wrongGuesses; // keep track of wrong & right guesses
+    // create a word bank
+    private String [] wordBankArray;
+
+    //create constructor
+    public Hangman(){
+        this.userGuessString = "";
+        this.generateSpaces = "";
+        this.wrongGuesses = 0;
+        this.wordBankArray = new String[] {"asteroid", "astronaut", "astronomer", "astronomical", "astronomy", "binary star", "black body", "black hole",
                 "cislunar", "cluster", "comet", "conjunction", "constellation", "Coriolis force", "corona", "cosmic", "dark matter", "day", "declination",
                 "deep space", "Deneb", "density", "Earth", "earthbound", "eccentricity", "eclipse", "ecliptic", "falling star", "galaxy", "gravity", "heliocentric", "helium",
                 "hydrogen", "hyperbolic orbit", "hypernova", "interstellar", "interstellar dust", "ionosphere", "Jupiter", "lunar", "magnitude", "mare", "Mars", "Mercury",
@@ -12,23 +23,22 @@ public class Hangman {
                 "pole star", "precession", "probe", "pulsar", "quarter moon", "quasar", "radiant", "radiation", "red dwarf", "red giant star", "rocket", "satellite",
                 "Saturn", "scientific notation", "sky", "solar", "solar system", "star", "starlight", "sun", "sunspot", "superior planet", "supernova", "telemetry", "telescope",
                 "terminator", "terrestrial", "total eclipse", "umbra", "universe", "Uranus", "white dwarf", "white giant", "wormhole", "x-rays", "yellow dwarf", "zenith"};
+    }
 
+    // start game method
+        public void start() {
         Scanner console = new Scanner(System.in);
         Random rand = new Random();
 
-        String correctLetters = "";
-        String userGuessString = "";
-        // keep track of wrong & right guesses
-        int wrongGuesses = 0;
-
         // pick a random word
-        String randomWord = randomWord(wordBankArray, rand); // chooses a random word from word array
+        String randomWord = randomWord(rand); // chooses a random word from word array
         char [] randomWordArray = new char[randomWord.length()]; // make array for random word
         randomWordArray = randomWord.toCharArray();
+            System.out.println(randomWord);
 
         // spells out mystery word with _'s
-        String generateSpaces = generateSpaces(randomWordArray);
-        System.out.println(generateSpaces);
+        this.generateSpaces = generateSpaces(randomWordArray);
+        System.out.println(this.generateSpaces);
         char[] generateSpacesArray = new char[randomWordArray.length]; // convert generateSpaces to array
         generateSpacesArray = generateSpaces.toCharArray();
 
@@ -42,7 +52,7 @@ public class Hangman {
 
             // store all user guesses in array
             char[] userGuessArray = new char[26]; //26 possible letters to guess
-            userGuessString = userGuessString(userGuessString, userGuess);
+            userGuessString = userGuessString(userGuess);
             int guessCount = 0;
 
             // compare guess with userWordArray and returns true/false
@@ -51,11 +61,11 @@ public class Hangman {
                 System.out.println("Your guess '" + userGuess + "' is correct");
             } else {
                 System.out.println("Your guess '" + userGuess + "' is incorrect. Try again. ");
-                wrongGuesses++;
+                this.wrongGuesses++;
             }
             // print hangman figure
             String hangMan = "";
-            hangMan = hangMan(correctGuess, hangMan, wrongGuesses);
+            hangMan = hangMan(correctGuess, hangMan);
             System.out.println(hangMan);
 
             // print updated _'s with correct letters
@@ -64,45 +74,45 @@ public class Hangman {
 
             // print guess #
             System.out.println(" Guesses #: " + numberOfGuesses);
-            System.out.println("Guesses: " + userGuessString);
+            System.out.println("Guesses: " + this.userGuessString);
 
             // end game
             if (generateLetterString.equals(randomWord)){ // end while loop if word is guessed
                 System.out.print("You Win!");
                 numberOfGuesses = randomWord.length() + 7;
             }
-            if (wrongGuesses == 7){
+            if (this.wrongGuesses == 7){
                 System.out.print("You ran out of Guesses.");
                 numberOfGuesses = randomWord.length() + 7;
             }
-
-
         }
     }
 
     // method that picks a random word from wordBankArray
-    public static String randomWord(String[] wordBankArray, Random rand){
+    public String randomWord(Random rand){
         String randomWord = "";
 
         // pick a random word from word bank
-        int randWordBank = rand.nextInt(wordBankArray.length);
-        randomWord = wordBankArray[randWordBank];
+        int randWordBank = rand.nextInt(this.wordBankArray.length);
+        randomWord = this.wordBankArray[randWordBank];
         return randomWord;
 
     }
 
     // method to find the length of userWord and return length using "_"
-    public static String generateSpaces(char[] randomWordArray){
-        String generateSpaces = "";
+    public String generateSpaces(char[] randomWordArray){
         char space = ' ';
         for (int i = 0; i < randomWordArray.length; i++){
-            generateSpaces += "_";
+
             // create a " " when needed
             if(randomWordArray[i] == space){
-                generateSpaces += " ";
+                this.generateSpaces += " ";
+            } else {
+                this.generateSpaces += "_";
             }
         }
-        return generateSpaces;
+        System.out.println(this.generateSpaces);
+        return this.generateSpaces;
     }
 
     // method to prompt user to guess letter and returns array
@@ -114,8 +124,8 @@ public class Hangman {
     }
 
     // method to store all user guesses in an array
-    public static String userGuessString(String userGuessString, char userGuess){
-        userGuessString = userGuessString + " " + userGuess + " ";
+    public String userGuessString(char userGuess){
+        userGuessString = this.userGuessString + " " + userGuess + " ";
 
         return userGuessString;
     }
@@ -144,14 +154,15 @@ public class Hangman {
         }
         // convert char[] to string
         generateSpacesString = new String(generateSpacesArray);
-
+        System.out.println(generateSpacesString);
+        System.out.println(new String(randomWordArray));
         return generateSpacesString;
     }
 
 
 
     // draw a stickman whenever correctGuess is incorrect & count increases)
-    public static String hangMan(boolean correctGuess, String hangMan, int wrongGuesses){
+    public String hangMan(boolean correctGuess, String hangMan){
 
         // if(correctGuess == false){
         int i = wrongGuesses;
@@ -175,4 +186,11 @@ public class Hangman {
         }
         return hangMan;
     }
+
+    public void restart(){
+        this.wrongGuesses = 0;
+        this.userGuessString = "";
+        this.generateSpaces = "";
+    }
 }
+
